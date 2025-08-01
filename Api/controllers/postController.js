@@ -211,10 +211,28 @@ const getUserPostController = async (req, res, next) => {
 
 
 
+
+
 const deletePostController = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { postId } = req.params;
+
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+
+    await Post.findByIdAndDelete(postId);
+
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting post:", error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
+
 
 const likePostController = async (req, res, next) => {
   try {
