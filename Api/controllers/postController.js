@@ -190,11 +190,26 @@ const getSinglePostController = async (req, res) => {
   }
 };
 
-
 const getUserPostController = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+  
+    const posts = await Post.find({ user: userId }); 
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching user's posts:", error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
+
+
 
 const deletePostController = async (req, res, next) => {
   try {
