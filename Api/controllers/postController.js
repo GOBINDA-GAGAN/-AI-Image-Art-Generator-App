@@ -11,7 +11,6 @@ const generatedFilename = (userId, allPostLength) => {
   return `${userId}-${allPostLength}-${date}.png`;
 };
 
-
 const postWithImagesController_V3 = async (req, res, next) => {
   const { userId } = req.params;
   const { prompt, negativePrompt, size, style, imageUrl, revisedPrompt } =
@@ -82,14 +81,8 @@ const generatedFilenameMultiple = (userId, index) => {
 const postWithImagesController_V2 = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const {
-      prompt,
-      negativePrompt,
-      size,
-      style,
-      imageUrls,
-      revisedPrompt
-    } = req.body;
+    const { prompt, negativePrompt, size, style, imageUrls, revisedPrompt } =
+      req.body;
 
     // ✅ Normalize imageUrls input (string or array)
     let imageUrlsNormalized = [];
@@ -173,13 +166,31 @@ const postWithImagesController_V2 = async (req, res, next) => {
 
 const getPostController = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const allPost = await Post.find().populate("user", "username");
+    return res.status(200).json({ posts: allPost });
+  } catch (error) {
+    next(error);
+  }
 };
 
-const getSinglePostController = async (req, res, next) => {
+const getSinglePostController = async (req, res) => {
+  const { id } = req.params;
+
   try {
-  } catch (error) {}
+    const post = await Post.findById(id).populate("user", "username");
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.error("Error fetching post:", error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
+
+
 const getUserPostController = async (req, res, next) => {
   try {
   } catch (error) {}
